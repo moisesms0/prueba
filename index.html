@@ -1,258 +1,665 @@
 <!doctype html>
-<html lang="en">
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-  <!-- Hacer que se pueda añadir como app -->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Prueba">
 
 <!-- Icono para la pantalla de inicio -->
 <link rel="apple-touch-icon" href="icon.png">
-<title>Party & Go — 329 Mega Deck</title>
-<style>
-  :root{--bg:#0f1113;--panel:#1b1f23;--border:#2a3036;--text:#f5f7fa;--muted:#aab2bd}
-  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
-  .wrap{max-width:920px;margin:auto;padding:16px}
-  header{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-  h1{margin:0;font-size:18px}
-  .controls{display:flex;gap:8px;align-items:center}
-  .controls button,.controls select{background:#171b20;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
-  .time{font-variant-numeric:tabular-nums;font-size:18px;background:#0f1318;border:1px solid var(--border);border-radius:8px;padding:6px 10px}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:14px}
-  .row{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 0;border-top:1px dashed var(--border)}
-  .row:first-child{border-top:0}
-  .icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#222833;font-size:22px}
-  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;margin-bottom:2px}
-  .text{font-size:18px;line-height:1.35}
-  .muted{color:var(--muted);font-size:14px}
-  .hint{margin-top:10px;color:var(--muted);font-size:13px}
-  .meta{margin-top:10px;color:var(--muted);font-size:12px}
-</style>
+  <title>Party & Go — 500 Mega Deck</title>
+  <style>
+    :root{--bg:#0f1113;--panel:#171a1f;--line:#28303b;--fg:#f5f7fa;--muted:#aab2bd;--chip:#222833}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .wrap{max-width:880px;margin:auto;padding:18px}
+    header{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    h1{margin:0;font-size:20px}
+    .controls{display:flex;gap:8px;align-items:center}
+    .controls button,.controls select{background:#1b1f23;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+    .time{font-variant-numeric:tabular-nums;background:#101317;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
+    .row{display:grid;grid-template-columns:52px 1fr;gap:12px;padding:14px 0;border-top:1px dashed var(--line)}
+    .row:first-child{border-top:0}
+    .icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--chip);font-size:22px}
+    .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+    .text{font-size:19px;line-height:1.35}
+    .muted{color:var(--muted)}
+    footer{color:var(--muted);font-size:13px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Party &amp; Go — 500 Mega Deck</h1>
+      <div class="controls">
+        <button id="newCard" type="button">🎲 New Card</button>
+        <select id="timerSelect">
+          <option value="60">60s</option>
+          <option value="90" selected>90s</option>
+          <option value="120">120s</option>
+        </select>
+        <button id="start" type="button">▶ Start</button>
+        <button id="reset" type="button">↺ Reset</button>
+        <span class="time" id="readout">01:30</span>
+      </div>
+    </header>
 
-<div class="wrap">
-  <header>
-    <h1>Party & Go — 329 Mega Deck</h1>
-    <div class="controls">
-      <button id="newCard">🎲 New Card</button>
-      <select id="timerSelect">
-        <option value="60">60s</option>
-        <option value="90" selected>90s</option>
-        <option value="120">120s</option>
-      </select>
-      <button id="start">▶ Start</button>
-      <button id="reset">↺ Reset</button>
-      <span class="time" id="readout">01:30</span>
-    </div>
-  </header>
+    <section class="card">
+      <div class="row">
+        <div class="icon">💡</div>
+        <div><div class="label">Guess the brand</div><div class="text" id="idea"></div></div>
+      </div>
+      <div class="row">
+        <div class="icon">✋</div>
+        <div><div class="label">Mime</div><div class="text" id="mime"></div></div>
+      </div>
+      <div class="row">
+        <div class="icon">❓</div>
+        <div>
+          <div class="label">Trivia</div>
+          <div class="text" id="triviaQ"></div>
+          <div class="text muted" id="triviaA" role="button" title="Tap to reveal">Tap to reveal answer</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="icon">✏️</div>
+        <div><div class="label">Pictionary</div><div class="text" id="draw"></div></div>
+      </div>
+      <div class="row">
+        <div class="icon">💬</div>
+        <div>
+          <div class="label">Taboo</div>
+          <div class="text" id="tabooWord"></div>
+          <div class="text muted" id="tabooForbid"></div>
+        </div>
+      </div>
+      <footer id="sizes" class="muted">Loading…</footer>
+    </section>
+  </div>
 
-  <section class="card">
-    <div class="row"><div class="icon">💡</div><div><div class="label">Guess</div><div class="text" id="idea"></div></div></div>
-    <div class="row"><div class="icon">✋</div><div><div class="label">Mime</div><div class="text" id="mime"></div></div></div>
-    <div class="row"><div class="icon">❓</div><div><div class="label">Trivia</div><div class="text" id="trivia"></div><div class="text muted" id="answer"></div></div></div>
-    <div class="row"><div class="icon">✏️</div><div><div class="label">Draw</div><div class="text" id="draw"></div></div></div>
-    <div class="row"><div class="icon">💬</div><div><div class="label">Taboo</div><div class="text" id="taboo"></div><div class="text muted" id="forbidden"></div></div></div>
-    <div class="hint">Tap the trivia answer to reveal it.</div>
-    <div class="meta" id="meta"></div>
-  </section>
-</div>
+  <script>
+  /* ---------- DATA (compact line format → expanded at runtime) ---------- */
 
-<script>
-/* ===== helpers ===== */
-const $=s=>document.querySelector(s);
-const pick=a=>a[Math.floor(Math.random()*a.length)];
-const uniq=a=>[...new Set(a)];
-function buildTo(N, base, filler){
-  let out=uniq(base.slice());
-  for(let i=1; out.length<N; i++) out.push(filler(i));
-  return out.slice(0,N);
-}
+  // 100 brands (real + global)
+  const GUESS = `
+Apple
+Nike
+Adidas
+Samsung
+Sony
+LG
+Microsoft
+Google
+Amazon
+Coca-Cola
+Pepsi
+McDonald's
+Burger King
+KFC
+Starbucks
+Subway
+Domino's
+Pizza Hut
+Tesla
+BMW
+Mercedes-Benz
+Audi
+Volkswagen
+Toyota
+Honda
+Ford
+Chevrolet
+Ferrari
+Lamborghini
+Porsche
+IKEA
+H&M
+Zara
+Uniqlo
+Patagonia
+The North Face
+Puma
+Reebok
+Under Armour
+New Balance
+Vans
+Converse
+LEGO
+Nintendo
+PlayStation
+Xbox
+Sega
+Uber
+Lyft
+Airbnb
+Booking.com
+Expedia
+Spotify
+Netflix
+Disney
+Pixar
+Marvel
+DC
+Warner Bros.
+HBO
+Paramount
+TikTok
+Instagram
+Facebook
+WhatsApp
+Snapchat
+X (Twitter)
+Reddit
+LinkedIn
+Zoom
+Slack
+Dropbox
+GitHub
+PayPal
+Visa
+Mastercard
+American Express
+Santander
+HSBC
+Barclays
+Shell
+BP
+TotalEnergies
+Red Bull
+Monster Energy
+Heineken
+Guinness
+Ben & Jerry's
+Oreo
+KitKat
+Nestlé
+Cadbury
+Dove
+Nivea
+L’Oréal
+Gillette
+Colgate
+Oral-B
+Pampers
+Huggies
+Dyson
+Philips
+GoPro
+Canon
+Nikon
+Xiaomi
+OnePlus
+`.trim().split('\n');
 
-/* ===== seeds (short lists; we expand to 329) ===== */
-const seedIdeas=[
-  "Big Ben","Stonehenge","Tower Bridge","London Eye","Buckingham Palace","Edinburgh Castle","Giant's Causeway","Cliffs of Moher",
-  "Eiffel Tower","Colosseum","Taj Mahal","Great Wall of China","Statue of Liberty","Golden Gate Bridge","Machu Picchu","Sydney Opera House",
-  "Petra","Pyramids of Giza","Burj Khalifa","Rubik's Cube","Umbrella","Hourglass","Typewriter","Vinyl Record","Drone","Smartwatch",
-  "Compass","Binoculars","Chessboard","Playing Cards","Dice","Lantern","Backpack","Treasure Map","Lighthouse","Bicycle","Skateboard",
-  "Fish and Chips","Scone","Paella","Sushi","Ramen","Pizza","Falafel","Baklava","Poutine","Chocolate","Curry",
-  "Harry Potter","Sherlock Holmes","James Bond","Doctor Who","The Beatles","Queen (band)","Adele","Ed Sheeran","Spider-Man","Batman",
-  "Superman","Star Wars","The Avengers","Game of Thrones","Stranger Things","Frozen","Toy Story"
-];
+  // 100 mime actions
+  const MIME = `
+Tie shoelaces
+Row a boat
+Walk a tightrope
+Juggle
+Play the drums
+Drive a bus
+Fly a kite
+Shoot a basketball
+Serve a tennis ball
+Boxing match
+Drink hot soup
+Sneeze loudly
+Meditate
+Ride a horse
+Climb a ladder
+Use binoculars
+Type very fast
+Play the piano
+Fold laundry
+Iron a shirt
+Surf a wave
+Ski downhill
+Snowboard jump
+Skateboard trick
+Swat a fly
+Take a selfie
+Walk a dog
+Throw a Frisbee
+Fish with a rod
+BBQ burgers
+Open a jar
+Paint a wall
+Vacuum the floor
+Water plants
+Yoga tree pose
+Karate chop
+Hula hoop
+Balance a book
+Hide and seek
+Blow up a balloon
+Cut hair
+Deal playing cards
+Bowling strike
+Wash windows
+Call on phone
+Mime a robot
+Mime slow-motion
+Push a heavy box
+Carry groceries
+Umbrella in wind
+Rowing team
+Score a goal
+Goalkeeper save
+Shoot an arrow
+Cast a spell
+Pirate with telescope
+Salute like soldier
+Marching band
+Chef flipping pancake
+Taste a lemon
+Write on chalkboard
+Photograph with camera
+Operate crane
+Ring doorbell
+Tighten a screw
+Hammer a nail
+Saw a log
+Shovel snow
+Rake leaves
+Plant a tree
+Milk a cow
+Lasso a bull
+Ride a bicycle
+Change a tire
+Referee whistle
+DJ scratching
+Mic drop
+Rock star guitar
+Opera singer
+Ballet spin
+Mime invisible box
+Magician top hat
+Pull a rabbit
+Ninja stealth
+Hide under table
+Swim freestyle
+Dive in pool
+Row inflatable raft
+Parachute landing
+Airplane takeoff
+Spacewalk
+Astronaut moonwalk
+Alien greeting
+Zombie walk
+Vampire cape
+Superhero landing
+Spider web throw
+Lightsaber duel
+Bow to audience
+Curtain call
+`.trim().split('\n');
 
-const seedMimes=[
-  "Rowing a boat","Walking a dog","Drinking tea","Playing football","Typing fast","Juggling","Bowling","Cooking pasta","Fishing",
-  "Hula-hooping","Painting a wall","Taking a selfie","Driving a car","Ballet","Boxing","Serving in tennis","Shooting a basket",
-  "Surfing a wave","Vacuuming","Wrapping a present","Karate chop","Conducting an orchestra","DJ mixing","Opening an umbrella",
-  "Inflating a balloon","Yoga tree pose","Skiing","Skateboarding","Rock climbing","Reading a giant book"
-];
+  // 100 draw prompts
+  const DRAW = `
+Castle
+Spaceship
+Dragon
+Pirate ship
+Mermaid
+Volcano
+Desert cactus
+Treasure map
+Haunted house
+Lighthouse
+Windmill
+Hot-air balloon
+Roller coaster
+Ferris wheel
+Train engine
+Submarine
+Helicopter
+Rocket
+Robot dog
+Wizard hat
+Crystal ball
+Treasure chest
+Diamond ring
+Crown
+Throne
+Sword
+Shield
+Anchor
+Compass
+Campfire
+Tent
+Igloo
+Ski goggles
+Snowman
+Penguin
+Kangaroo
+Koala
+Panda
+Elephant
+Giraffe
+Lion
+Tiger
+Dolphin
+Whale
+Shark
+Octopus
+Turtle
+Butterfly
+Bee
+Snail
+Rainbow
+Shooting star
+Sunflower
+Cactus garden
+Palm tree
+Waterfall
+Mountain
+Island
+Bridge
+Skyscraper
+Clock tower
+Castle gate
+Drawbridge
+Carousel horse
+Airplane window
+Suitcase
+Passport
+Camera
+Game controller
+Headphones
+Microphone
+Guitar
+Drum set
+Piano keys
+Soccer ball
+Tennis racket
+Basketball hoop
+American football
+Surfboard
+Skateboard
+Bicycle
+Motorbike
+Car
+Bus
+Taxi
+Ambulance
+Fire truck
+Police car
+Toothbrush
+Soap
+Pizza slice
+Burger
+Ice-cream cone
+Sushi
+Taco
+Donut
+Cupcake
+Cookie jar
+Candy cane
+`.trim().split('\n');
 
-const seedDrawAnimals=["Cat","Dog","Elephant","Giraffe","Lion","Tiger","Penguin","Panda","Dolphin","Whale","Octopus","Shark","Turtle","Fox","Owl","Eagle","Bear","Camel"];
-const seedDrawScenes=["Beach","Desert","Jungle","Forest","City skyline","Mountain range","Underwater reef","Space","Pirate ship","Castle","Treasure map","Volcano","Haunted house","Circus","Farm","Theme park"];
-const seedDrawThings=["Robot","Spaceship","Rocket","Hot air balloon","Submarine","Lighthouse","Airplane","Train","Car","Bicycle","Bridge","Fountain","Clock Tower","Lantern","Snowman","Cactus","Igloo","Fireplace"];
+  // 100 trivia Q|A lines
+  const TRIVIA_LINES = `
+What is the capital of Australia?|Canberra
+Which planet has the Great Red Spot?|Jupiter
+Who wrote "1984"?|George Orwell
+What is H2O commonly called?|Water
+Largest ocean on Earth?|Pacific
+How many continents are there?|7
+What is the currency of Japan?|Yen
+Who painted the Mona Lisa?|Leonardo da Vinci
+Fastest land animal?|Cheetah
+Tallest mountain above sea level?|Mount Everest
+Which country gifted the Statue of Liberty?|France
+What gas do plants absorb from air?|Carbon dioxide
+Smallest prime number?|2
+What is the hardest natural substance?|Diamond
+Who discovered penicillin?|Alexander Fleming
+What is the capital of Canada?|Ottawa
+Which language has most native speakers?|Mandarin Chinese
+What is the largest desert?|Sahara
+Who composed the Four Seasons?|Vivaldi
+How many players in a football (soccer) team on the field?|11
+Which metal is liquid at room temperature?|Mercury
+What is the chemical symbol for gold?|Au
+Which city is known as the Eternal City?|Rome
+Who developed the theory of relativity?|Albert Einstein
+What is the longest river in the world (by length)?|Nile
+Which country hosts the city of Marrakech?|Morocco
+In computing, what does "CPU" stand for?|Central Processing Unit
+What year did World War II end?|1945
+Which country won the first FIFA World Cup (1930)?|Uruguay
+Which instrument has 88 keys?|Piano
+What is the capital of Iceland?|Reykjavík
+Which planet is closest to the Sun?|Mercury
+What is the largest mammal?|Blue whale
+Which artist cut off part of his ear?|Vincent van Gogh
+What is the boiling point of water at sea level (°C)?|100
+Which country has the maple leaf on its flag?|Canada
+What is the main ingredient in guacamole?|Avocado
+What is the currency of the UK?|Pound sterling
+Who wrote "Pride and Prejudice"?|Jane Austen
+What does DNA stand for?|Deoxyribonucleic acid
+Which continent is the Amazon rainforest in?|South America
+What is the capital of Portugal?|Lisbon
+What is the tallest building in the world (2025)?|Burj Khalifa
+Which country invented pizza (modern style)?|Italy
+What is the largest internal organ in the human body?|Liver
+Which element has the symbol O?|Oxygen
+How many teeth do adult humans typically have?|32
+What is the main gas in Earth's atmosphere?|Nitrogen
+Which country is famous for tango dance?|Argentina
+Capital of New Zealand?|Wellington
+Who painted "The Starry Night"?|Vincent van Gogh
+Which ocean is on the east coast of the US?|Atlantic
+What is the square root of 144?|12
+What instrument did Louis Armstrong play?|Trumpet
+Which country has cities Cairo and Alexandria?|Egypt
+What is the fastest bird?|Peregrine falcon
+Which country do the Alps mainly span?|Switzerland/Italy/France/Austria
+Who directed "Titanic" (1997)?|James Cameron
+Which sport uses the terms love and deuce?|Tennis
+What is the capital of South Korea?|Seoul
+Which animal is on the Australian coat of arms alongside the emu?|Kangaroo
+What is the chemical symbol for sodium?|Na
+Which river runs through London?|Thames
+What is the largest planet?|Jupiter
+Which city hosted the 2012 Summer Olympics?|London
+What is the longest bone in the human body?|Femur
+Who is the author of "Harry Potter"?|J.K. Rowling
+Which country uses the won currency?|South Korea
+What does WWW stand for?|World Wide Web
+Which African country was formerly Abyssinia?|Ethiopia
+What is the capital of Turkey?|Ankara
+Which instrument is also called a mouth organ?|Harmonica
+Which vitamin do we get from sunlight?|Vitamin D
+What is sushi traditionally wrapped in?|Seaweed (nori)
+Which continent is Madagascar close to?|Africa
+Who discovered gravity (apple story)?|Isaac Newton
+What is the largest species of shark?|Whale shark
+Which sea separates Europe and Africa at Spain/Morocco?|Strait of Gibraltar (sea: Mediterranean/Atlantic strait)
+What is the capital of Ireland?|Dublin
+Which country produces champagne?|France
+What do bees collect to make honey?|Nectar
+Which country has the Taj Mahal?|India
+What is the currency of Mexico?|Peso
+Which city is known as the Big Apple?|New York City
+Which instrument has strings and a bow and sits between knees?|Cello
+Which gas do humans exhale most?|Carbon dioxide
+Which Italian city is famous for canals?|Venice
+What is the capital of Norway?|Oslo
+Where would you find the pyramids of Giza?|Egypt
+Which metal is in the center of the Earth mostly?|Iron
+What color do you get by mixing red and blue?|Purple
+What is the closest star to Earth?|The Sun
+How many minutes are in 3 hours?|180
+Which animal can sleep standing up and has black tongue?|Giraffe
+Who wrote "The Little Prince"?|Antoine de Saint-Exupéry
+Which country invented paper?|China
+What is the main ingredient of hummus?|Chickpeas
+What is the capital of Brazil?|Brasília
+Which organ pumps blood?|Heart
+Which country hosted the first modern Olympics (1896)?|Greece
+What is the tallest waterfall by height (Venezuela)?|Angel Falls
+`.trim().split('\n').map(l=>{const [q,a]=l.split('|');return {q,a}});
 
-const seedTabooCelebs=[
-  ["Tom Hardy",["Actor","Venom","Bane","British"]],
-  ["Adele",["Singer","Hello","Grammy","Rolling in the Deep"]],
-  ["Harry Potter",["Wizard","Hogwarts","Magic","JK Rowling"]],
-  ["Sherlock Holmes",["Detective","Pipe","London","Watson"]],
-  ["James Bond",["007","Spy","MI6","Casino Royale"]],
-  ["Taylor Swift",["Singer","Love Story","Shake It Off","Grammy"]],
-  ["Keanu Reeves",["Matrix","John Wick","Neo","Actor"]],
-  ["Rihanna",["Umbrella","Fenty","Singer","Barbados"]],
-  ["David Beckham",["Football","England","Manchester","Victoria"]],
-  ["Elon Musk",["Tesla","SpaceX","Rocket","Billionaire"]]
-];
+  // 100 taboo entries: "Word|forbid1,forbid2,forbid3,forbid4,forbid5"
+  const TABOO_LINES = `
+Tom Hardy|Actor,Venom,Bane,British,Inception
+Taylor Swift|Singer,Pop,Album,Eras,Swifties
+Lionel Messi|Football,Argentina,Barcelona,PSG,Goals
+Rihanna|Singer,Fenty,Umbrella,Barbados,Makeup
+Cristiano Ronaldo|Football,Portugal,Juventus,Real Madrid,CR7
+Ariana Grande|Singer,Ponytail,Thank U Next,Pop,Voice
+Adele|Singer,Hello,London,Grammy,Ballad
+Elon Musk|Tesla,SpaceX,Twitter,CEO,Electric
+Barack Obama|President,USA,Michelle,White House,Democrat
+Oprah Winfrey|Talk show,TV,Book Club,Philanthropy,Media
+Beyoncé|Singer,Jay-Z,Single Ladies,Queen B,Destiny's Child
+Ed Sheeran|Singer,Guitar,Shape of You,Red Hair,UK
+Lady Gaga|Singer,Meat Dress,Poker Face,Oscar,Pop
+Harry Styles|One Direction,Singer,Watermelon Sugar,UK,Pop
+Emma Watson|Actress,Hermione,Harry Potter,UN,UK
+Keanu Reeves|Actor,Matrix,John Wick,Neo,Canada
+Robert Downey Jr.|Actor,Iron Man,Marvel,Tony Stark,Avengers
+Scarlett Johansson|Actress,Black Widow,Marvel,Avengers,Lucy
+Zendaya|Actress,Euphoria,Spider-Man,Disney,Emmy
+Dwayne Johnson|The Rock,Wrestling,Fast & Furious,Actor,Muscles
+Drake|Rapper,Canada,Hotline Bling,OVO,Charts
+Billie Eilish|Singer,Bad Guy,Green Hair,Grammy,Pop
+Shakira|Singer,Hips Don't Lie,Colombia,World Cup,Dance
+Bad Bunny|Rapper,Puerto Rico,Latin,Reggaeton,Grammy
+Selena Gomez|Singer,Disney,Only Murders,Makeup,Actress
+Kylie Jenner|Makeup,Reality,Kar-Jenner,Billionaire,Influencer
+Kendall Jenner|Model,Runway,Reality,Sister,Kardashian
+Kim Kardashian|Reality,SKIMS,West,Influencer,TV
+Megan Thee Stallion|Rapper,Savage,Houston,Hot Girl,Grammy
+Post Malone|Rapper,Tattoos,Circles,Beerbongs,Artist
+Bruno Mars|Singer,24K Magic,Uptown Funk,Hawaii,Grammy
+Justin Bieber|Singer,Canada,Peaches,Belieber,Pop
+Dua Lipa|Singer,Levitating,London,Grammy,Pop
+A$AP Rocky|Rapper,Fashion,Harlem,Rihanna,Hip-hop
+Katy Perry|Singer,Firework,Roar,Teenage Dream,Pop
+Madonna|Singer,Queen of Pop,Vogue,Like a Prayer,Icon
+Elton John|Singer,Piano,Rocket Man,Glasses,UK
+Adeleke (fictional)|Afrobeats,Nigeria,Singer,Stage,Album
+Chris Hemsworth|Actor,Thor,Marvel,Australia,Hammer
+Tom Holland|Actor,Spider-Man,Marvel,Zendaya,Peter Parker
+Ryan Reynolds|Actor,Deadpool,Canada,Humor,Aviation Gin
+Pedro Pascal|Actor,The Mandalorian,Last of Us,Chile,Helmet
+Ana de Armas|Actress,Blonde,Cuba,Knives Out,Hollywood
+Millie Bobby Brown|Actress,Stranger Things,Eleven,Netflix,UK
+Cillian Murphy|Actor,Oppenheimer,Peaky Blinders,Ireland,Oscar
+Margot Robbie|Actress,Barbie,Australia,Harley Quinn,Oscar
+Timothée Chalamet|Actor,Dune,Wonka,Call Me By Your Name,France
+Zendaya Coleman|Actress,Singer,Euphoria,Emmy,Disney
+LeBron James|Basketball,Lakers,NBA,Cleveland,King
+Serena Williams|Tennis,Grand Slam,US Open,Champion,Racket
+Roger Federer|Tennis,Swiss,Wimbledon,GOAT,Champion
+Usain Bolt|Sprinter,Jamaica,Fastest,Olympics,World Record
+Simone Biles|Gymnast,USA,Gold,Flip,Champion
+Michael Phelps|Swimming,Olympics,Gold,USA,Records
+Novak Djokovic|Tennis,Serbia,Grand Slam,Champion,No.1
+Rafael Nadal|Tennis,Spain,Clay,Roland Garros,Goat
+Mo Salah|Football,Egypt,Liverpool,Premier League,Goals
+Kylian Mbappé|Football,France,PSG,Speed,World Cup
+Pep Guardiola|Coach,Manchester City,Barcelona,Tactics,Manager
+Jose Mourinho|Coach,Chelsea,Inter,Real Madrid,Special One
+David Beckham|Football,England,LA Galaxy,Free Kick,Model
+Taylor Swift (song)|Blank Space,Shake It Off,Cardigan,Love Story,Midnights
+Oreo|Cookie,Chocolate,Cream,Dunk,Milk
+KitKat|Chocolate,Wafer,Have a Break,Bar,Nestlé
+Pringles|Chips,Stack,Tube,Crunch,Snack
+Doritos|Chips,Triangle,Cheese,Nacho,Crunch
+Haribo|Gummies,Goldbears,Candy,Sweets,Chewy
+Nutella|Hazelnut,Spread,Chocolate,Jar,Bread
+Skittles|Candy,Rainbow,Fruit,Chewy,Sweets
+M&M's|Chocolate,Candy,Peanuts,Colorful,Pack
+Cheetos|Snack,Cheese,Puffs,Corn,Crunchy
+Snickers|Chocolate,Peanuts,Caramel,Nougat,Bar
+Twix|Chocolate,Caramel,Biscuit,Left,Right
+Oreos (Ice-cream)|Cookie,Cream,Dessert,Cold,Chocolate
+Coca-Cola|Soda,Red,Can,Bubbles,Drink
+Pepsi|Soda,Blue,Can,Cola,Drink
+Sprite|Lemon,Lime,Soda,Green,Drink
+Fanta|Orange,Soda,Drink,Bubbles,Bottle
+Red Bull|Energy,Blue,Silver,Wings,Drink
+Monster|Energy,Green,Claw,Can,Drink
+Nescafé|Coffee,Instant,Jar,Mug,Drink
+Starbucks|Coffee,Frappuccino,Green Mermaid,Cup,Barista
+McDonald's|Burger,Fries,Big Mac,Golden Arches,Fast food
+Burger King|Whopper,Crown,Flame-grilled,Fries,Fast food
+KFC|Chicken,Secret Recipe,Bucket,Colonel,Fast food
+Subway|Sandwich,Footlong,Sub,Bread,Fresh
+Domino's|Pizza,Delivery,Blue,Red,Box
+Pizza Hut|Pizza,Pan,Red Roof,Cheese,Slice
+Ben & Jerry's|Ice-cream,Tub,Chunks,Flavors,Vermont
+Heinz Ketchup|Tomato,Sauce,Bottle,Red,Fries
+Hellmann's|Mayonnaise,Jar,Sandwich,Spread,White
+Tabasco|Hot Sauce,Spicy,Red,Chili,Drop
+Sriracha|Hot Sauce,Rooster,Bottle,Spicy,Chili
+Nutri-Grain|Cereal,Bar,Breakfast,Snack,Kellogg's
+Cadbury Dairy Milk|Chocolate,Purple,Bar,Cocoa,UK
+Toblerone|Chocolate,Triangles,Alps,Honey,Nougat
+Ferrero Rocher|Chocolate,Gold,Hazelnut,Box,Italy
+Lindt|Chocolate,Swiss,Truffles,Bar,Cocoa
+Walkers|Crisps,UK,Chips,Potato,Snack
+Lay's|Chips,Crisps,Yellow,Potato,Snack
+Ruffles|Chips,Ridges,Potato,Snack,Crunch
+Takis|Snack,Spicy,Rolls,Chili,Crunch
+Hershey's|Chocolate,Bar,USA,Milk,Cocoa
+`.trim().split('\n').map(l=>{const [w,f]=l.split('|');return {word:w,forbidden:f.split(',')}});
 
-const seedTabooObjects=[
-  ["Pizza",["Cheese","Slice","Italy","Oven"]],
-  ["Smartphone",["Apps","Screen","Touch","Call"]],
-  ["Bicycle",["Pedal","Wheel","Handlebars","Helmet"]],
-  ["Airplane",["Pilot","Airport","Wings","Flight"]],
-  ["Coffee",["Cup","Caffeine","Espresso","Mug"]],
-  ["Violin",["Strings","Bow","Music","Orchestra"]],
-  ["Camera",["Lens","Photo","Flash","Shutter"]]
-];
+  /* ---------- helpers ---------- */
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  const EL = id => document.getElementById(id);
 
-const seedTriviaCore=[
-  {q:"What is the capital of France?",a:"Paris"},
-  {q:"Which planet is known as the Red Planet?",a:"Mars"},
-  {q:"Who painted the Mona Lisa?",a:"Leonardo da Vinci"},
-  {q:"In which year did the Titanic sink?",a:"1912"},
-  {q:"Which ocean is the largest on Earth?",a:"The Pacific Ocean"},
-  {q:"What is the chemical symbol for gold?",a:"Au"},
-  {q:"Who wrote 'Hamlet'?",a:"William Shakespeare"},
-  {q:"Smallest country in the world?",a:"Vatican City"},
-  {q:"Which gas do plants absorb?",a:"Carbon dioxide"}
-];
-
-const capitals=[
-  ["Spain","Madrid"],["Italy","Rome"],["Germany","Berlin"],["Portugal","Lisbon"],["Netherlands","Amsterdam"],
-  ["Belgium","Brussels"],["Switzerland","Bern"],["Austria","Vienna"],["Czech Republic","Prague"],["Poland","Warsaw"],
-  ["Hungary","Budapest"],["Greece","Athens"],["Turkey","Ankara"],["Russia","Moscow"],["China","Beijing"],["Japan","Tokyo"],
-  ["South Korea","Seoul"],["India","New Delhi"],["Vietnam","Hanoi"],["Thailand","Bangkok"],["Indonesia","Jakarta"],
-  ["Philippines","Manila"],["Australia","Canberra"],["New Zealand","Wellington"],["South Africa","Pretoria / Cape Town"],
-  ["Egypt","Cairo"],["Kenya","Nairobi"],["Nigeria","Abuja"],["Ethiopia","Addis Ababa"],["Morocco","Rabat"],
-  ["Argentina","Buenos Aires"],["Brazil","Brasília"],["Chile","Santiago"],["Peru","Lima"],["Colombia","Bogotá"],
-  ["Mexico","Mexico City"],["Canada","Ottawa"],["United States","Washington, D.C."],["Cuba","Havana"],["Norway","Oslo"],
-  ["Sweden","Stockholm"],["Denmark","Copenhagen"],["Finland","Helsinki"],["Iceland","Reykjavík"],["Ireland","Dublin"],
-  ["Ukraine","Kyiv"],["Saudi Arabia","Riyadh"],["Iran","Tehran"],["Iraq","Baghdad"],["Israel","Jerusalem"],
-  ["Jordan","Amman"],["Qatar","Doha"],["UAE","Abu Dhabi"],["Singapore","Singapore"],["Malaysia","Kuala Lumpur"],
-  ["Nepal","Kathmandu"],["Bangladesh","Dhaka"],["Cambodia","Phnom Penh"],["Laos","Vientiane"],["Myanmar","Naypyidaw"],
-  ["Scotland","Edinburgh"]
-];
-
-/* ===== expand to EXACTLY 329 each ===== */
-const TARGET=329;
-
-function buildIdeas(){
-  const extras=["Treasure Chest","Magic Carpet","Time Machine","Hologram","Comet","Aurora","Coral Reef","Thunderstorm","Rainbow"];
-  return buildTo(TARGET,[...seedIdeas,...extras],i=>`Mystery Thing #${i}`);
-}
-function buildMimes(){
-  const verbs=["juggle","ski","swim","dance","pirate walk","tiptoe","throw confetti","ride a broom","lasso a cow","shoot a selfie"];
-  return buildTo(TARGET,seedMimes,i=>`Pretend to ${verbs[i%verbs.length]} #${i}`);
-}
-function buildDraws(){
-  let base=[...seedDrawAnimals,...seedDrawScenes,...seedDrawThings];
-  const mods=["with sunglasses","on a skateboard","under the stars","wearing a crown","playing guitar","drinking tea","reading a book","with a cape"];
-  for(const a of seedDrawAnimals){
-    for(const m of mods){
-      if(base.length>=TARGET) break;
-      base.push(`${a} ${m}`);
-    }
-    if(base.length>=TARGET) break;
+  function newCard(){
+    EL('idea').textContent   = pick(GUESS);
+    EL('mime').textContent   = pick(MIME);
+    const t = pick(TRIVIA_LINES);
+    EL('triviaQ').textContent = t.q;
+    const ansEl = EL('triviaA');
+    ansEl.textContent = 'Tap to reveal answer';
+    ansEl.onclick = () => ansEl.textContent = t.a;
+    EL('draw').textContent   = pick(DRAW);
+    const tb = pick(TABOO_LINES);
+    EL('tabooWord').textContent = tb.word;
+    EL('tabooForbid').textContent = 'Forbidden: ' + tb.forbidden.join(', ');
+    EL('sizes').textContent = `Deck sizes — Guess:${GUESS.length} · Mime:${MIME.length} · Draw:${DRAW.length} · Taboo:${TABOO_LINES.length} · Trivia:${TRIVIA_LINES.length}`;
   }
-  for(const s of seedDrawScenes){
-    for(const t of seedDrawThings){
-      if(base.length>=TARGET) break;
-      base.push(`${t} at ${s}`);
-    }
-    if(base.length>=TARGET) break;
+
+  /* ---------- timer ---------- */
+  let timer, secs = 90;
+  function startTimer(){
+    clearInterval(timer);
+    secs = parseInt(EL('timerSelect').value,10);
+    updateTime();
+    timer = setInterval(()=>{
+      secs--; updateTime();
+      if(secs<=0){ clearInterval(timer); alert("⏰ Time's up!"); }
+    },1000);
   }
-  return base.slice(0,TARGET);
-}
-function buildTaboos(){
-  let b=[...seedTabooCelebs,...seedTabooObjects];
-  for(let n=b.length; n<TARGET; n++){
-    const presets=[
-      ["Mystery Star #"+(n+1),["Famous","Movie","Music","TV"]],
-      ["Gadget #"+(n+1),["Battery","Screen","Charge","App"]],
-      ["Snack #"+(n+1),["Sweet","Salty","Crunchy","Packet"]],
-      ["Place #"+(n+1),["City","Country","Capital","Map"]]
-    ];
-    b.push(presets[n%4]);
+  function resetTimer(){
+    clearInterval(timer);
+    secs = parseInt(EL('timerSelect').value,10);
+    updateTime();
   }
-  return b.slice(0,TARGET).map(([main,forbid])=>({main,forbid}));
-}
-function buildTrivia(){
-  let out=[...seedTriviaCore];
-  capitals.forEach(([c,a])=>out.push({q:`What is the capital of ${c}?`,a}));
-  const extras=[
-    {q:"Which desert is the largest hot desert?",a:"Sahara"},
-    {q:"Earth’s longest river (disputed)?",a:"Nile or Amazon"},
-    {q:"Largest mammal?",a:"Blue whale"},
-    {q:"Study of earthquakes?",a:"Seismology"},
-    {q:"Festival awarding the Palme d'Or?",a:"Cannes Film Festival"},
-    {q:"Sport with 'love' and 'deuce'?",a:"Tennis"},
-    {q:"'Eternal City'?",a:"Rome"},
-    {q:"Element with symbol O?",a:"Oxygen"}
-  ];
-  for(let i=0; out.length<TARGET; i++) out.push(extras[i%extras.length]);
-  return out.slice(0,TARGET);
-}
+  function updateTime(){
+    const m = Math.floor(secs/60);
+    const s = ('0'+(secs%60)).slice(-2);
+    EL('readout').textContent = `${m}:${s}`;
+  }
 
-/* banks */
-const ideas=buildIdeas();
-const mimes=buildMimes();
-const drawings=buildDraws();
-const taboos=buildTaboos();
-const trivia=buildTrivia();
-
-/* ===== UI logic ===== */
-function newCard(){
-  $("#idea").textContent=pick(ideas);
-  $("#mime").textContent=pick(mimes);
-
-  const t=pick(trivia);
-  $("#trivia").textContent=t.q;
-  const ans=$("#answer");
-  ans.textContent="Tap to reveal answer";
-  ans.onclick=()=>{ ans.textContent=t.a; };
-
-  $("#draw").textContent=pick(drawings);
-
-  const tb=pick(taboos);
-  $("#taboo").textContent=tb.main;
-  $("#forbidden").textContent="Forbidden: "+tb.forbid.join(", ");
-
-  $("#meta").textContent=`Deck sizes — Guess:${ideas.length} • Mime:${mimes.length} • Draw:${drawings.length} • Taboo:${taboos.length} • Trivia:${trivia.length}`;
-}
-
-/* ===== timer ===== */
-let timer,secs=90;
-function updateClock(){
-  const m=Math.floor(secs/60),s=("0"+(secs%60)).slice(-2);
-  $("#readout").textContent=`${m}:${s}`;
-}
-function startTimer(){
-  clearInterval(timer);
-  secs=parseInt($("#timerSelect").value,10);
-  updateClock();
-  timer=setInterval(()=>{
-    secs--;
-    updateClock();
-    if(secs<=0){clearInterval(timer);alert("⏰ Time's up!");}
-  },1000);
-}
-function resetTimer(){
-  clearInterval(timer);
-  secs=parseInt($("#timerSelect").value,10);
-  updateClock();
-}
-
-/* init */
-$("#newCard").onclick=newCard; $("#start").onclick=startTimer; $("#reset").onclick=resetTimer;
-resetTimer(); newCard();
-</script>
+  /* ---------- init ---------- */
+  EL('newCard').onclick = newCard;
+  EL('start').onclick = startTimer;
+  EL('reset').onclick = resetTimer;
+  resetTimer();
+  newCard();
+  </script>
+</body>
 </html>
-
